@@ -71,14 +71,7 @@ Entre os principais resultados alcançados:
 * Representação gráfica intuitiva
 * Visualização simultânea de todos os segmentos da carteira
 
-A tabela desenvolvida permite acompanhar:
 
-* valores de prazo
-* taxas de juros
-* perdas esperadas
-* valor dos empréstimos
-* retorno unitário
-* contribuição financeira individual
 
 O slider implementado com p5.js oferece uma forma visual de compreender o impacto de pequenas alterações nos parâmetros financeiros da carteira.
 
