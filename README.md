@@ -1,11 +1,23 @@
-# Filtro Adaptativo — Documentação
+# Filtro Adaptativo
 
 ## 1. Introdução à proposta
 
-O projeto do Banco Pan exige a definição de uma função objetivo linear que equilibra retorno esperado e risco de inadimplência.
+A "microinterface" propõe a construção de um filtro adaptativo interativo para análise de um portfólio de crédito, permitindo visualizar como as diferentes variáveis da função objetivo impactam diretamente a concessão total do limite de crédito.
 
-O filtro adaptativo foi desenvolvido exatamente para isso: permitir a exploração interativa dos parâmetros controláveis da função objetivo, **ū** (taxa), **t** (prazo), **LGD** (perda dado default) e **L_k** (limite ofertado), visualizando em tempo real como cada escolha afeta a rentabilidade da carteira antes de qualquer execução formal do modelo de otimização.
+O sistema permite alterar em tempo real:
 
+* **t** → prazo do empréstimo (anos)
+* **ū** → taxa média de juros
+* **LGD** → perda dado default
+* **L_k** → valor do empréstimo por segmento
+
+Cada alteração atualiza instantaneamente:
+
+* o retorno unitário do segmento (**c_k**)
+* a contribuição financeira de cada grupo
+* o valor total da função objetivo da carteira
+
+A proposta busca transformar um modelo matemático abstrato em uma ferramenta visual e intuitiva para apoio à tomada de decisão financeira.
 
 ---
 
@@ -13,17 +25,49 @@ O filtro adaptativo foi desenvolvido exatamente para isso: permitir a exploraç�
 
 <img src="esboco.jpg">
 
+Durante o desenvolvimento, a ideia inicial era criar uma interface minimalista que destacasse apenas os elementos essenciais da análise:
+
+* seleção da variável ativa
+* controle por slider interativo
+* visualização em tempo real da função objetivo
+* tabela comparativa dos segmentos
+
+A estrutura foi dividida em três partes principais:
+
+1. **Painel de controle**
+
+   * seleção da variável analisada
+
+2. **Slider interativo**
+
+   * ajuste visual dos parâmetros usando p5.js
+
+3. **Tabela dinâmica**
+
+   * atualização automática dos impactos financeiros
+
+
 ---
 
 ## 3. Registro do resultado obtido
 
-<img src="image.png">
+O resultado final foi um filtro interativo (microinterface) interativa capaz de simular diferentes cenários de crédito.
 
-A ferramenta desenvolvida em p5.js + HTML permite:
+Entre os principais resultados alcançados:
 
-- Selecionar qual variável está sendo ajustada via dropdown
-- Arrastar um slider para modificar o valor em tempo real
-- Visualizar na tabela como **c_k** (retorno unitário do segmento) e a **contribuição total** de cada segmento se alteram
-- Acompanhar o **objetivo total da carteira** atualizado instantaneamente
+* Interface responsiva e limpa
+* Atualização instantânea dos cálculos
+* Destaque visual da variável ativa
+* Representação gráfica intuitiva
+* Compatibilidade com modo claro e escuro
+* Visualização simultânea de todos os segmentos da carteira
 
-A tabela exibe os quatro parâmetros ajustáveis lado a lado para todos os segmentos k, com destaque visual na variável ativa, facilitando a identificação de combinações viáveis — por exemplo, pares de ū e t que mantêm c_k positivo em todos os segmentos, ou valores de L_k compatíveis com as restrições de alavancagem do banco.
+
+O slider implementado com p5.js oferece uma forma visual de compreender o impacto de pequenas alterações nos parâmetros financeiros da carteira.
+
+Além disso, o sistema facilita a identificação de cenários viáveis, como:
+
+* combinações de juros e prazo que mantêm retorno positivo
+* limites de empréstimo sustentáveis
+* segmentos com maior impacto no resultado final
+
