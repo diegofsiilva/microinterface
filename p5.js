@@ -123,4 +123,67 @@
       }
     }
 
-   
+    // =========================
+    // Atualização tabela
+    // =========================
+
+    function updateTable(resultado = 0) {
+
+      let body = document.getElementById("tableBody");
+
+      body.innerHTML = "";
+
+      for (let key in vars) {
+
+        let row = `
+          <tr>
+            <td>${key}</td>
+            <td>${Number(vars[key]).toFixed(2)}</td>
+          </tr>
+        `;
+
+        body.innerHTML += row;
+      }
+
+      document.getElementById("resultado").innerHTML =
+        "Função Objetivo = " + resultado.toFixed(2);
+    }
+
+    // =========================
+    // Barra visual
+    // =========================
+
+    function drawBar(value) {
+
+      let maxBar = 600;
+
+      let normalized = constrain(value / 1000, 0, 1);
+
+      let widthBar = normalized * maxBar;
+
+      fill(220);
+
+      rect(380, 180, maxBar, 50, 10);
+
+      fill(30, 136, 229);
+
+      rect(380, 180, widthBar, 50, 10);
+
+      fill(0);
+
+      textSize(18);
+
+      text(
+        value.toFixed(2),
+        390,
+        212
+      );
+    }
+
+    // =========================
+    // Responsividade
+    // =========================
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
