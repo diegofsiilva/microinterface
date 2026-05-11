@@ -29,22 +29,6 @@ Durante o desenvolvimento, a ideia inicial era criar uma interface minimalista q
 
 * seleção da variável ativa
 * controle por slider interativo
-* visualização em tempo real da função objetivo
-* tabela comparativa dos segmentos
-
-A estrutura foi dividida em três partes principais:
-
-1. **Painel de controle**
-
-   * seleção da variável analisada
-
-2. **Slider interativo**
-
-   * ajuste visual dos parâmetros usando p5.js
-
-3. **Tabela dinâmica**
-
-   * atualização automática dos impactos financeiros
 
 
 ---
