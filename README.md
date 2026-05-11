@@ -25,7 +25,7 @@ A proposta busca transformar um modelo matemático abstrato em uma ferramenta vi
 
 ## 2. Rascunhos iniciais
 
-<img src="esboco.jpg" width=80%>
+<img src="/imgs/esboco.jpg" width=80%>
 
 Durante o desenvolvimento, a ideia inicial era criar uma interface minimalista que destacasse apenas os elementos essenciais da análise:
 
@@ -57,7 +57,7 @@ A estrutura foi dividida em três partes principais:
 
 ## 3. Registro do resultado obtido
 
-<img src="image.png" width=80% >
+<img src="/imgs/image.png" width=80% >
 
 --- 
 
