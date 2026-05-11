@@ -26,4 +26,40 @@
 
     let sliders = {};
 
-  
+    // =========================
+    // p5.js
+    // =========================
+
+    function setup() {
+
+      createCanvas(windowWidth, windowHeight);
+
+      // Criação dos sliders
+      createDynamicSliders();
+
+      updateTable();
+    }
+
+    function draw() {
+
+      background(245);
+
+      // Atualiza valores
+      for (let key in sliders) {
+        vars[key] = parseFloat(sliders[key].value());
+      }
+
+      // =========================
+      // Cálculo do modelo
+      // =========================
+
+      let ck =
+        vars.pi_k *
+        ((vars.u_bar * vars.t) - (vars.PD_k * vars.LGD));
+
+      let resultado =
+        vars.nk *
+        ck *
+        vars.L_k;
+
+      
