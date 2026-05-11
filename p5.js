@@ -1,189 +1,368 @@
+const K = 4;
 
-    // =========================
-    // Variáveis do modelo
-    // =========================
+const state = {
+  selectedVar: 't',
+  selectedK: 0,
+  vars: {
+    n:   [120, 85, 200, 60],
+    pi:  [0.92, 0.78, 0.95, 0.65],
+    u:   [0.12, 0.12, 0.12, 0.12],
+    t:   [1.0, 1.0, 1.0, 1.0],
+    PD:  [0.03, 0.07, 0.02, 0.12],
+    LGD: [0.45, 0.45, 0.45, 0.45],
+    L:   [50000, 30000, 80000, 20000],
+  }
+};
 
-    let vars = {
-      nk: 10,
-      pi_k: 0.8,
-      u_bar: 100,
-      t: 12,
-      PD_k: 0.05,
-      LGD: 0.4,
-      L_k: 2
+const varMeta = {
+  t: {
+    label:'t',
+    desc:'prazo',
+    min:0.25,
+    max:5,
+    step:0.25,
+    global:true,
+    fmt:v=>v.toFixed(2)
+  },
+
+  u: {
+    label:'ū',
+    desc:'juros',
+    min:0.01,
+    max:0.40,
+    step:0.005,
+    global:true,
+    fmt:v=>(v*100).toFixed(1)+'%'
+  },
+
+  LGD: {
+    label:'LGD',
+    desc:'perda',
+    min:0.01,
+    max:1,
+    step:0.01,
+    global:true,
+    fmt:v=>(v*100).toFixed(0)+'%'
+  },
+
+  L: {
+    label:'L_k',
+    desc:'empréstimo',
+    min:1000,
+    max:500000,
+    step:1000,
+    global:false,
+    fmt:v=>'R$'+Math.round(v/1000)+'k'
+  }
+};
+
+function ck(k){
+  const u = state.vars.u[0];
+  const t = state.vars.t[0];
+  const PD = state.vars.PD[k];
+  const LGD = state.vars.LGD[0];
+
+  return state.vars.pi[k] * (u * t - PD * LGD);
+}
+
+function contrib(k){
+  return state.vars.n[k] * ck(k) * state.vars.L[k];
+}
+
+function objective(){
+  let s = 0;
+
+  for(let k=0;k<K;k++){
+    s += contrib(k);
+  }
+
+  return s;
+}
+
+function getVal(name,k){
+  return varMeta[name].global
+    ? state.vars[name][0]
+    : state.vars[name][k];
+}
+
+function setVal(name,k,v){
+
+  if(varMeta[name].global){
+
+    for(let i=0;i<K;i++){
+      state.vars[name][i] = v;
+    }
+
+  }else{
+    state.vars[name][k] = v;
+  }
+}
+
+function fmtBRL(v){
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+
+function updateTable(){
+
+  const tbody = document.getElementById('table-body');
+
+  tbody.innerHTML = '';
+
+  const vn = state.selectedVar;
+  const selK = state.selectedK;
+  const meta = varMeta[vn];
+
+  for(let k=0;k<K;k++){
+
+    const active =
+      (k === selK && vn === 'L') || meta.global;
+
+    const c = ck(k);
+    const con = contrib(k);
+
+    const tr = document.createElement('tr');
+
+    if(active){
+      tr.className = 'active-row';
+    }
+
+    const cStr =
+      c >= 0
+      ? c.toFixed(4)
+      : `<span class="val-neg">${c.toFixed(4)}</span>`;
+
+    const conStr =
+      con >= 0
+      ? fmtBRL(con)
+      : `<span class="val-neg">${fmtBRL(con)}</span>`;
+
+    tr.innerHTML =
+      `<td>k=${k+1}</td>` +
+      `<td>${state.vars.t[0].toFixed(2)}</td>` +
+      `<td>${(state.vars.u[0]*100).toFixed(1)}%</td>` +
+      `<td>${(state.vars.LGD[0]*100).toFixed(0)}%</td>` +
+      `<td>${varMeta.L.fmt(state.vars.L[k])}</td>` +
+      `<td>${cStr}</td>` +
+      `<td>${conStr}</td>`;
+
+    tbody.appendChild(tr);
+  }
+
+  const obj = objective();
+
+  const objCell = document.getElementById('obj-val');
+
+  objCell.textContent = fmtBRL(obj);
+}
+
+let p5inst;
+
+function buildSketch(){
+
+  if(p5inst){
+    p5inst.remove();
+  }
+
+  const container = document.getElementById('p5-container');
+
+  const W = container.offsetWidth ;
+  const H = 230;
+
+  p5inst = new p5(function(p){
+
+    let dragging = false;
+
+    const PAD = 48;
+    const SY = H/2 + 10;
+
+    const TL = PAD + 8;
+    const TR = W - PAD - 8;
+
+    const TLen = TR - TL;
+
+    function valToX(v){
+
+      const meta = varMeta[state.selectedVar];
+
+      return TL + ((v - meta.min) / (meta.max - meta.min)) * TLen;
+    }
+
+    function xToVal(x){
+
+      const meta = varMeta[state.selectedVar];
+
+      let t =
+        Math.max(0, Math.min(1, (x - TL) / TLen));
+
+      let v =
+        meta.min + t * (meta.max - meta.min);
+
+      const steps =
+        Math.round((v - meta.min) / meta.step);
+
+      return +(meta.min + steps * meta.step).toFixed(8);
+    }
+
+    p.setup = function(){
+
+      p.createCanvas(W,H).parent(container);
+
+      p.noLoop();
+
+      p.redraw();
     };
 
-    // Configuração dos sliders
-    let config = {
-      nk:    { min: 0, max: 100, step: 1 },
-      pi_k:  { min: 0, max: 1, step: 0.01 },
-      u_bar: { min: 0, max: 500, step: 1 },
-      t:     { min: 0, max: 60, step: 1 },
-      PD_k:  { min: 0, max: 1, step: 0.01 },
-      LGD:   { min: 0, max: 1, step: 0.01 },
-      L_k:   { min: 0, max: 20, step: 1 }
+    p.draw = function(){
+
+      p.clear();
+
+      p.background(255);
+
+      const vn = state.selectedVar;
+      const k = state.selectedK;
+
+      const meta = varMeta[vn];
+
+      const cur = getVal(vn,k);
+
+      const sx = valToX(cur);
+
+      p.noStroke();
+
+      p.fill(0);
+
+      p.textFont('monospace');
+
+      p.textSize(12);
+
+      p.text(
+        `${meta.label} — ${meta.desc}`,
+        PAD,
+        16
+      );
+
+      p.stroke(0);
+
+      p.strokeWeight(4);
+
+      p.line(TL,SY,TR,SY);
+
+      p.line(TL,SY,sx,SY);
+
+      const nTicks = 6;
+
+      for(let i=0;i<=nTicks;i++){
+
+        const tt = i / nTicks;
+
+        const tx = TL + tt * TLen;
+
+        const tv =
+          meta.min + tt * (meta.max - meta.min);
+
+        p.strokeWeight(1);
+
+        p.line(tx,SY+9,tx,SY+15);
+
+        p.noStroke();
+
+        p.textSize(10);
+
+        p.textAlign(p.CENTER,p.TOP);
+
+        p.text(meta.fmt(tv),tx,SY+17);
+      }
+
+      p.fill(0);
+
+      p.circle(sx,SY,26);
+
+      p.fill(255);
+
+      p.circle(sx,SY,10);
+
+      p.fill(0);
+
+      p.textSize(32);
+
+      p.textAlign(p.CENTER,p.CENTER);
+
+      p.text(
+        meta.fmt(cur),
+        W/2,
+        SY-58
+      );
+
+      p.textSize(13);
+
+      p.textAlign(p.RIGHT,p.BOTTOM);
+
+      p.text(
+        'Objetivo: ' + fmtBRL(objective()),
+        W-PAD,
+        H-10
+      );
     };
 
-    let sliders = {};
+    function sliderX(){
+      return valToX(
+        getVal(
+          state.selectedVar,
+          state.selectedK
+        )
+      );
+    }
 
-    // =========================
-    // p5.js
-    // =========================
+    p.mousePressed = function(){
 
-    function setup() {
+      const sx = sliderX();
 
-      createCanvas(windowWidth, windowHeight);
+      if(
+        Math.abs(p.mouseX - sx) < 20 &&
+        Math.abs(p.mouseY - SY) < 20
+      ){
+        dragging = true;
+      }
+    };
 
-      // Criação dos sliders
-      createDynamicSliders();
+    p.mouseDragged = function(){
+
+      if(!dragging){
+        return;
+      }
+
+      setVal(
+        state.selectedVar,
+        state.selectedK,
+        xToVal(p.mouseX)
+      );
+
+      p.redraw();
 
       updateTable();
-    }
+    };
 
-    function draw() {
+    p.mouseReleased = function(){
+      dragging = false;
+    };
+  });
+}
 
-      background(245);
+document
+  .getElementById('var-select')
+  .addEventListener('change',function(){
 
-      // Atualiza valores
-      for (let key in sliders) {
-        vars[key] = parseFloat(sliders[key].value());
-      }
+    state.selectedVar = this.value;
 
-      // =========================
-      // Cálculo do modelo
-      // =========================
+    buildSketch();
 
-      let ck =
-        vars.pi_k *
-        ((vars.u_bar * vars.t) - (vars.PD_k * vars.LGD));
+    updateTable();
+});
 
-      let resultado =
-        vars.nk *
-        ck *
-        vars.L_k;
+window.addEventListener('resize',function(){
+  buildSketch();
+});
 
-      // =========================
-      // Interface visual
-      // =========================
+buildSketch();
 
-      fill(30);
-      textSize(28);
-
-      text("Visualização da Função Objetivo", 380, 60);
-
-      textSize(22);
-
-      text(
-        "Resultado: " + resultado.toFixed(2),
-        380,
-        110
-      );
-
-      // =========================
-      // Gráfico simples
-      // =========================
-
-      drawBar(resultado);
-
-      // Atualiza tabela HTML
-      updateTable(resultado);
-    }
-
-    // =========================
-    // Criação dinâmica sliders
-    // =========================
-
-    function createDynamicSliders() {
-
-      let container = document.getElementById("sliders");
-
-      for (let key in vars) {
-
-        let div = document.createElement("div");
-        div.className = "slider-container";
-
-        let label = document.createElement("label");
-        label.innerHTML = key;
-
-        let slider = document.createElement("input");
-
-        slider.type = "range";
-
-        slider.min = config[key].min;
-        slider.max = config[key].max;
-        slider.step = config[key].step;
-        slider.value = vars[key];
-
-        sliders[key] = slider;
-
-        div.appendChild(label);
-        div.appendChild(slider);
-
-        container.appendChild(div);
-      }
-    }
-
-    // =========================
-    // Atualização tabela
-    // =========================
-
-    function updateTable(resultado = 0) {
-
-      let body = document.getElementById("tableBody");
-
-      body.innerHTML = "";
-
-      for (let key in vars) {
-
-        let row = `
-          <tr>
-            <td>${key}</td>
-            <td>${Number(vars[key]).toFixed(2)}</td>
-          </tr>
-        `;
-
-        body.innerHTML += row;
-      }
-
-      document.getElementById("resultado").innerHTML =
-        "Função Objetivo = " + resultado.toFixed(2);
-    }
-
-    // =========================
-    // Barra visual
-    // =========================
-
-    function drawBar(value) {
-
-      let maxBar = 600;
-
-      let normalized = constrain(value / 1000, 0, 1);
-
-      let widthBar = normalized * maxBar;
-
-      fill(220);
-
-      rect(380, 180, maxBar, 50, 10);
-
-      fill(30, 136, 229);
-
-      rect(380, 180, widthBar, 50, 10);
-
-      fill(0);
-
-      textSize(18);
-
-      text(
-        value.toFixed(2),
-        390,
-        212
-      );
-    }
-
-    // =========================
-    // Responsividade
-    // =========================
-
-    function windowResized() {
-      resizeCanvas(windowWidth, windowHeight);
-    }
+updateTable();

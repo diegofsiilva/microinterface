@@ -1,0 +1,105 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:sans-serif;
+  background:white;
+  color:black;
+  padding:20px;
+}
+
+.container{
+  max-width:780px;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.card{
+  border:1px solid black;
+  padding:16px;
+}
+
+h1{
+  font-size:20px;
+}
+
+h1 span,
+label,
+.formula-sub,
+th,
+.global-note{
+  color:black;
+  opacity:0.7;
+}
+
+.formula-box{
+  text-align:center;
+}
+
+.formula-main,
+.formula-sub{
+  font-family:monospace;
+}
+
+.controls-row,
+.control-group{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+select{
+  padding:6px 10px;
+  border:1px solid black;
+  background:white;
+  color:black;
+}
+
+.canvas-wrap{
+  border:1px solid black;
+  overflow:hidden;
+}
+
+#p5-container canvas{
+  display:fixed;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+}
+
+th,
+td{
+  padding:8px;
+  border:1px solid black;
+  text-align:left;
+}
+
+tr.active-row td{
+  background:rgb(255, 255, 255);
+  color:rgb(0, 0, 0);
+}
+
+.badge{
+  border:1px solid black;
+  padding:2px 6px;
+  font-size:10px;
+}
+
+.val-hl{
+  font-weight:bold;
+}
+
+.val-neg,
+.obj-neg,
+.obj-pos{
+  color:black;
+}
