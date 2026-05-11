@@ -62,4 +62,65 @@
         ck *
         vars.L_k;
 
-      
+      // =========================
+      // Interface visual
+      // =========================
+
+      fill(30);
+      textSize(28);
+
+      text("Visualização da Função Objetivo", 380, 60);
+
+      textSize(22);
+
+      text(
+        "Resultado: " + resultado.toFixed(2),
+        380,
+        110
+      );
+
+      // =========================
+      // Gráfico simples
+      // =========================
+
+      drawBar(resultado);
+
+      // Atualiza tabela HTML
+      updateTable(resultado);
+    }
+
+    // =========================
+    // Criação dinâmica sliders
+    // =========================
+
+    function createDynamicSliders() {
+
+      let container = document.getElementById("sliders");
+
+      for (let key in vars) {
+
+        let div = document.createElement("div");
+        div.className = "slider-container";
+
+        let label = document.createElement("label");
+        label.innerHTML = key;
+
+        let slider = document.createElement("input");
+
+        slider.type = "range";
+
+        slider.min = config[key].min;
+        slider.max = config[key].max;
+        slider.step = config[key].step;
+        slider.value = vars[key];
+
+        sliders[key] = slider;
+
+        div.appendChild(label);
+        div.appendChild(slider);
+
+        container.appendChild(div);
+      }
+    }
+
+   
