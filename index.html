@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Filtro Adaptativo - p5.js</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    #controls {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      width: 300px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .slider-container {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type=range] {
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background: #ececec;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #1e88e5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="controls">
+
+    <h2>Filtro Adaptativo</h2>
+
+    <div id="sliders"></div>
+
+    <div id="resultado"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Variável</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+  </div>
+
+
+</body>
+</html>
